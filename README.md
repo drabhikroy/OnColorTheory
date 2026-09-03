@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue)](LICENSE)
 ![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-arm64-black?logo=apple&logoColor=white)
 [![Platform](https://img.shields.io/badge/platform-macOS%2014%2B-lightgrey)](#requirements)
-[![Release](https://img.shields.io/github/v/release/drabhikroy/tessera)](https://github.com/drabhikroy/tessera/releases/latest)
+[![Release](https://img.shields.io/github/v/release/drabhikroy/oncolortheory)](https://github.com/drabhikroy/oncolortheory/releases/latest)
 
 On Color Theory is a native macOS learning and analysis app built with Swift and SwiftUI. Version 1.0.0 establishes the app shell, deterministic color core, Learn, Explore, Convert, Build, Check, and Reference workspaces, persistent Color Tray, Color Inspector, evidence metadata, and optional model-assisted palette recommendations.
 
