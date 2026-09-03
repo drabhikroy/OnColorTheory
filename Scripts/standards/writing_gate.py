@@ -26,7 +26,11 @@ EXTENSIONS = (".swift", ".md", ".sh", ".json", ".plist", ".py", ".html", ".svg")
 SKIP_FILES = {"THIRD_PARTY_NOTICES.md", "OFL.txt", "SwiftMath-LICENSE.txt",
               "LICENSE.md", "LICENSE", "LICENSE.txt",
               "writing_gate.py"}  # this file names the terms it looks for
-SKIP_DIRS = {".git", ".build", "dist"}
+# A local build copies a dependency's own resource bundle into Build/,
+# including scripts that dependency ships with its own text. Walking into it
+# means reading someone else's code as if it were this project's prose, the
+# same reason license text is skipped above.
+SKIP_DIRS = {".git", ".build", "dist", "Build", "DerivedData"}
 
 EM = "\u2014"
 EN = "\u2013"
