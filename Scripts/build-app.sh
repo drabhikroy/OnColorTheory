@@ -49,29 +49,38 @@ done
 
 chmod -R u+w "$staged_app"
 xattr -cr "$staged_app"
-codesign --force --sign - --timestamp=none "$staged_app"
+
+# Sign fully here, in /private/tmp, before anything moves into Build/. Build/
+# sits inside this project's working copy, which lives under ~/Documents; if
+# iCloud Drive's "Desktop & Documents Folders" sync is on for this Mac, its
+# file provider daemon can attach its own extended attributes to a file the
+# moment it appears there, and codesign refuses to sign anything carrying
+# that kind of metadata. Nothing here in /private/tmp is synced, so the
+# signature never has to race it.
+codesign --force --deep --sign - --timestamp=none "$staged_app"
 codesign --verify --deep --strict "$staged_app"
 
 ditto --norsrc --noextattr "$staged_app" "$app_bundle"
 
-clean_bundle_metadata() {
-    xattr -dr com.apple.FinderInfo "$app_bundle" 2>/dev/null || true
-    xattr -dr 'com.apple.fileprovider.fpfs#P' "$app_bundle" 2>/dev/null || true
-}
-
-sign_final_bundle() {
-    for attempt in 1 2 3; do
-        # The file provider may attach metadata after the bundle is copied.
-        # Clear those attributes immediately before each signing attempt.
-        sleep 2
-        clean_bundle_metadata
-        if codesign --force --deep --sign - --timestamp=none "$app_bundle"; then
+# The copy into Build/ can still pick up file-provider metadata after the
+# fact, since that folder is synced. Re-verifying (not re-signing) confirms
+# the delivered bundle still matches the signature it already carries; retry
+# gives any late-arriving metadata time to settle before we give up.
+verify_final_bundle() {
+    for attempt in 1 2 3 4 5; do
+        if codesign --verify --deep --strict "$app_bundle" 2>/dev/null; then
             return 0
         fi
+        sleep 2
+        xattr -dr com.apple.FinderInfo "$app_bundle" 2>/dev/null || true
+        xattr -dr 'com.apple.fileprovider.fpfs#P' "$app_bundle" 2>/dev/null || true
     done
     return 1
 }
 
-sign_final_bundle
-codesign --verify --deep --strict "$app_bundle"
+if ! verify_final_bundle; then
+    # Every retry failed silently; run it once more without swallowing
+    # stderr so the actual codesign error reaches the terminal.
+    codesign --verify --deep --strict "$app_bundle"
+fi
 print "$app_bundle"
