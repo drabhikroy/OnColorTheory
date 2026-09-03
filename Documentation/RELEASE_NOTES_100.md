@@ -2,7 +2,7 @@
 
 The first public release.
 
-On Color Theory is a macOS app for learning how color numbers behave, and for checking the ones you are about to use. Convert a color between notations and inspect every stage of the conversion. Test whether people can actually read it. Build a palette of named roles and export it to code. Find out why any of it works the way it does. One color travels with you: pick it once, and every workspace picks it up from there.
+On Color Theory is a macOS app for learning how color numbers behave, and for checking the ones you are about to use. Convert a color between notations and inspect every stage of the conversion. Test whether people can actually read it. Build a palette of named roles and export it to code. Find out why any of it works the way it does.
 
 The name nods to *De Coloribus*, handed down in the Aristotelian corpus and rendered in English as *On Colors*, alongside the ordinary sense of color theory. Much of the material inside began as teaching material, built for the color portion of a data visualization course taught as an assistant professor at West Virginia University, and collected here in a form that does not depend on being in the room to explain it.
 

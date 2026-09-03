@@ -2,6 +2,8 @@
 
 On Color Theory is a native macOS learning and analysis app built with Swift and SwiftUI. Version 1.0.0 establishes the app shell, deterministic color core, Learn, Explore, Convert, Build, Check, and Reference workspaces, persistent Color Tray, Color Inspector, evidence metadata, and optional model-assisted palette recommendations.
 
+![The Home screen, showing the two workspace groups and the working color](Documentation/screenshots/home.png)
+
 ## Run the project
 
 Open `Package.swift` in Xcode 26 or newer, select the `OnColorTheoryApp` scheme, and run it on macOS 14 or newer.

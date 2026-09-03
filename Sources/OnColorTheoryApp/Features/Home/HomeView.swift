@@ -191,11 +191,6 @@ struct HomeView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: 600, alignment: .leading)
 
-                Text("One color travels with you. Pick it once, and every workspace picks it up from there.")
-                    .appFont(.body)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: 600, alignment: .leading)
-
                 HStack(spacing: AppMetrics.snug) {
                     Button("Take the walkthrough") {
                         openWindow(id: AppWindowID.walkthrough)
