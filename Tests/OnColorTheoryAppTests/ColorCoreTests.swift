@@ -2191,7 +2191,7 @@ struct VisualCompositionTests {
     ) throws -> Data {
         let palette = AppColorVisionPalette.system.resolved(for: colorScheme)
         let hostingView = NSHostingView(
-            rootView: WalkthroughView(model: model, initialStep: step, recordsCompletion: false)
+            rootView: WalkthroughView(model: model, initialStep: step)
                 .frame(width: size.width, height: size.height)
                 .background(Color(nsColor: .windowBackgroundColor))
                 .environment(\.colorScheme, colorScheme)

@@ -280,7 +280,6 @@ struct OllamaServiceTests {
         }
     }
 
-    @MainActor
     @Test("An address with credentials, a query, a fragment, or plaintext to a remote host is refused")
     func endpointRejectsUnsafeAddresses() {
         for address in ["http://user:password@example.com",
@@ -292,7 +291,7 @@ struct OllamaServiceTests {
                         "http://127.0.0.1.evil.com:11434"] {
             let defaults = UserDefaults(suiteName: "test.\(UUID().uuidString)")!
             let controller = OllamaController(defaults: defaults, client: StubOllamaClient(models: [], response: ""))
-            controller.connectionMode = .externalServer
+            controller.connectionMode = .external
             controller.externalAddress = address
             #expect(throws: (any Error).self) { try controller.endpointURL() }
         }
