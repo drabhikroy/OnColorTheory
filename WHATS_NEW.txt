@@ -1,0 +1,29 @@
+On Color Theory 1.0.0
+
+If you are looking at this file, you have the right archive.
+
+Quick checks, from the folder that contains this file:
+
+  grep fallbackShortVersion Sources/OnColorTheoryApp/App/AppVersionInfo.swift
+      Expect 1.0.0.
+
+  ls Branding/
+      Nine files. SVG and PNG of the app mark at seven sizes.
+
+  grep "Coming in a later release" Sources/OnColorTheoryApp/App/AboutView.swift
+      The About window names the two sections planned for later.
+
+  grep -c "On Color Theory" Sources/OnColorTheoryApp/Features/Home/HomeView.swift
+      Expect 1 or more. The app name is the heading on the Home screen.
+
+  grep "Work on a color" Sources/OnColorTheoryApp/Models/ColorModels.swift
+      The sidebar is split into two named groups.
+
+Before you build, remember that editing source does not change an app bundle
+you built earlier:
+
+  swift build
+  swift test
+  Scripts/standards/run-all.sh
+  Scripts/build-app.sh
+  Scripts/package-release.sh

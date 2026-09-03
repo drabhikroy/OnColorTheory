@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>On Color Theory</title>
+<meta name="description" content="A macOS app for learning how color numbers behave, and for checking the ones you are about to use.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&family=Atkinson+Hyperlegible+Mono:wght@200..800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* The five semantic roles are the app's own Universal palette values,
+       so a color named here is the same color the app draws. */
+    --accent:        #184559;
+    --positive:      #24865D;
+    --warning:       #694804;
+    --critical:      #4D1E0C;
+    --secondary-cue: #B330B3;
+
+    --page:      #FBFBFC;
+    --panel:     #FFFFFF;
+    --ink:       #14171A;
+    --ink-quiet: #4E555C;
+    --rule:      #D6DADE;
+
+    /* A neutral surround. Viewing conditions for color judgment call for a
+       neutral gray around the sample, so that the surround does not shift
+       what you perceive. The hero is a viewing booth. */
+    --surround:      #8A8A8A;
+    --surround-ink:  #101010;
+    --surround-rule: #6E6E6E;
+
+    --measure: 66ch;
+    --radius: 10px;
+  }
+
+  :root:not([data-theme="light"]) {
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --accent:        #43C2F8;
+      --positive:      #B3EBDB;
+      --warning:       #E6B868;
+      --critical:      #F14809;
+      --secondary-cue: #B16FA3;
+
+      --page:      #16191C;
+      --panel:     #1E2226;
+      --ink:       #EDEFF1;
+      --ink-quiet: #A5ADB4;
+      --rule:      #333A40;
+
+      --surround:      #6B6B6B;
+      --surround-ink:  #F4F4F4;
+      --surround-rule: #8C8C8C;
+
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --accent:        #43C2F8;
+    --positive:      #B3EBDB;
+    --warning:       #E6B868;
+    --critical:      #F14809;
+    --secondary-cue: #B16FA3;
+
+    --page:      #16191C;
+    --panel:     #1E2226;
+    --ink:       #EDEFF1;
+    --ink-quiet: #A5ADB4;
+    --rule:      #333A40;
+
+    --surround:      #6B6B6B;
+    --surround-ink:  #F4F4F4;
+    --surround-rule: #8C8C8C;
+
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font-family: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible",
+                 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  a { color: inherit; }
+
+  :focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  h1, h2, h3 {
+    line-height: 1.15;
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+  }
+
+  h1 { font-size: clamp(2.4rem, 6.5vw, 3.9rem); }
+  h2 { font-size: clamp(1.5rem, 3.4vw, 2rem); margin-bottom: 0.7rem; }
+  h3 { font-size: 1.12rem; font-weight: 700; letter-spacing: 0; }
+
+  p { margin: 0 0 1rem; max-width: var(--measure); }
+  .quiet { color: var(--ink-quiet); }
+
+  /* ---------- Viewing booth ---------- */
+
+  .booth {
+    background: var(--surround);
+    color: var(--surround-ink);
+    padding: clamp(40px, 7vw, 76px) 0 clamp(36px, 6vw, 64px);
+  }
+
+  .booth h1 { color: var(--surround-ink); }
+
+  .booth .lede {
+    font-size: clamp(1.05rem, 2.1vw, 1.28rem);
+    max-width: 54ch;
+    margin-top: 1.1rem;
+    color: var(--surround-ink);
+    opacity: 0.86;
+  }
+
+  .sample-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+    align-items: flex-start;
+    margin-top: clamp(30px, 5vw, 46px);
+  }
+
+  .chip-stack { flex: 0 0 auto; }
+
+  .chip {
+    width: 172px;
+    height: 172px;
+    border-radius: 6px;
+    border: 1px solid var(--surround-rule);
+    display: block;
+  }
+
+  .chip-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .chip-controls label { font-size: 0.86rem; }
+
+  input[type="color"] {
+    width: 46px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid var(--surround-rule);
+    border-radius: 5px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  input[type="text"] {
+    width: 9.5ch;
+    padding: 6px 8px;
+    font: inherit;
+    font-family: "Atkinson Hyperlegible Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.92rem;
+    border: 1px solid var(--surround-rule);
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #101010;
+  }
+
+  .readout {
+    flex: 1 1 300px;
+    min-width: 280px;
+    border-top: 1px solid var(--surround-rule);
+  }
+
+  .readout dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(9ch, auto) 1fr;
+    gap: 0;
+  }
+
+  .readout dt,
+  .readout dd {
+    margin: 0;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--surround-rule);
+    font-size: 0.94rem;
+  }
+
+  .readout dt { font-weight: 700; padding-right: 18px; }
+
+  .readout dd {
+    font-family: "Atkinson Hyperlegible Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  .booth-note {
+    margin-top: 22px;
+    font-size: 0.88rem;
+    max-width: 62ch;
+    opacity: 0.82;
+  }
+
+  /* ---------- Sections ---------- */
+
+  section { padding: clamp(48px, 7vw, 84px) 0; }
+  section + section { border-top: 1px solid var(--rule); }
+
+  /* Each row is a question someone actually arrives with. The workspace name
+     is the answer, so the list is a routing table rather than a feature grid. */
+  .questions { margin: 28px 0 0; padding: 0; list-style: none; }
+
+  .questions li {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    gap: 4px 22px;
+    padding: 18px 0;
+    border-top: 1px solid var(--rule);
+    align-items: baseline;
+  }
+
+  .questions li:last-child { border-bottom: 1px solid var(--rule); }
+
+  .where {
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--answer, var(--accent));
+  }
+
+  .questions q { font-size: 1.08rem; font-style: normal; quotes: "\201C" "\201D"; }
+  .questions p { margin: 4px 0 0; font-size: 0.95rem; color: var(--ink-quiet); }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(228px, 1fr));
+    gap: 22px;
+    margin-top: 26px;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  .card h3 { margin-bottom: 6px; }
+  .card p { font-size: 0.95rem; margin: 0; color: var(--ink-quiet); }
+
+  .get {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 13px 24px;
+    background: var(--accent);
+    color: var(--page);
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 1.05rem;
+  }
+
+  .get:hover { text-decoration: underline; }
+
+  .requirements {
+    margin-top: 18px;
+    font-size: 0.94rem;
+    color: var(--ink-quiet);
+  }
+
+  .verdict {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    border: 2px solid currentColor;
+  }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 40px 0 64px;
+    font-size: 0.94rem;
+    color: var(--ink-quiet);
+  }
+
+  footer a { font-weight: 700; }
+
+  code {
+    font-family: "Atkinson Hyperlegible Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.92em;
+  }
+
+  @media (max-width: 620px) {
+    .questions li { grid-template-columns: 1fr; gap: 2px; }
+    .readout dl { grid-template-columns: minmax(8ch, auto) 1fr; }
+    .chip { width: 132px; height: 132px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="booth">
+  <div class="wrap">
+    <h1>On Color Theory</h1>
+    <p class="lede">
+      A macOS app for learning how color numbers behave, and for checking the
+      ones you are about to use.
+    </p>
+
+    <div class="sample-row">
+      <div class="chip-stack">
+        <span class="chip" id="chip" role="img" aria-label="The sample color"></span>
+        <div class="chip-controls">
+          <label for="picker">Sample</label>
+          <input type="color" id="picker" value="#C58F63" aria-label="Choose the sample color">
+          <input type="text" id="hexField" value="#C58F63" spellcheck="false"
+                 aria-label="Sample color as a hexadecimal value">
+        </div>
+      </div>
+
+      <div class="readout">
+        <dl>
+          <dt>sRGB</dt>            <dd id="outRGB">&mdash;</dd>
+          <dt>CIELAB D50</dt>      <dd id="outLab">&mdash;</dd>
+          <dt>OkLCh</dt>           <dd id="outOk">&mdash;</dd>
+          <dt>Luminance</dt>       <dd id="outY">&mdash;</dd>
+          <dt>On white</dt>        <dd id="outContrast">&mdash;</dd>
+        </dl>
+        <p class="booth-note" id="verdictLine"></p>
+      </div>
+    </div>
+
+    <p class="booth-note">
+      One color, five answers. This band is a neutral gray on purpose. Judging a
+      color against a colored surround shifts what you see, which is the first
+      thing the app has to teach and the first thing a page about color should
+      respect.
+    </p>
+  </div>
+</header>
+
+<main>
+
+<section>
+  <div class="wrap">
+    <h2>Start from your question</h2>
+    <p class="quiet">
+      Six workspaces. You do not have to learn what they are called, because
+      each one answers a question you already have.
+    </p>
+
+    <ul class="questions">
+      <li style="--answer: var(--critical)">
+        <span class="where">Check</span>
+        <div>
+          <q>Can people actually read this?</q>
+          <p>Contrast against the five WCAG 2.2 thresholds, color-space limits,
+             how far apart two colors really are, and whether meaning survives
+             without color.</p>
+        </div>
+      </li>
+      <li style="--answer: var(--accent)">
+        <span class="where">Convert</span>
+        <div>
+          <q>What is this color in another notation?</q>
+          <p>Enter a color once and read it back in any supported space, with
+             every stage of the conversion open for inspection.</p>
+        </div>
+      </li>
+      <li style="--answer: var(--positive)">
+        <span class="where">Build</span>
+        <div>
+          <q>I need a palette that holds up.</q>
+          <p>Design named roles rather than loose swatches, inspect the
+             relationships the palette actually uses, then export the same roles
+             to code.</p>
+        </div>
+      </li>
+      <li style="--answer: var(--secondary-cue)">
+        <span class="where">Learn</span>
+        <div>
+          <q>Why do these numbers behave this way?</q>
+          <p>Four lessons on light, vision, measurement, and reproduction, each
+             in three short parts, using the color you are already working on.</p>
+        </div>
+      </li>
+      <li style="--answer: var(--warning)">
+        <span class="where">Explore</span>
+        <div>
+          <q>What happens if I change this?</q>
+          <p>Predict a result, change one thing, then compare what you saw with
+             what the calculation says.</p>
+        </div>
+      </li>
+      <li>
+        <span class="where">Reference</span>
+        <div>
+          <q>What does this term mean?</q>
+          <p>Definitions, equations, and standards, each with its source and the
+             boundary of what it can tell you.</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>How it is built</h2>
+
+    <div class="cards">
+      <div class="card">
+        <h3>Accessible by construction</h3>
+        <p>Five color-vision palettes, each audited to WCAG 2.2 AA against the
+           deficiency it is named for. Full VoiceOver headings, adjustable text
+           scale, and support for Increased Contrast and Reduce Transparency.</p>
+      </div>
+      <div class="card">
+        <h3>Sourced, with stated limits</h3>
+        <p>Every calculation names the standard behind it and says what it
+           cannot tell you. CIEDE2000 matches all thirty four pairs of the
+           Sharma, Wu and Dalal verification set.</p>
+      </div>
+      <div class="card">
+        <h3>Nothing leaves without your say</h3>
+        <p>No account and no telemetry. Nothing is sent anywhere unless you turn
+           on palette suggestions, which are off by default and talk only to an
+           Ollama server you name, on this Mac or one you choose. Plaintext is
+           refused to anything outside your own network.</p>
+      </div>
+      <div class="card">
+        <h3>Made to be read</h3>
+        <p>Set in Atkinson Hyperlegible, the typeface designed by the Braille
+           Institute to keep similar letterforms distinguishable at low
+           acuity.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Get it</h2>
+    <p class="quiet">
+      Download the disk image, open it, and drag the app to your Applications
+      folder.
+    </p>
+    <a class="get" href="https://github.com/drabhikroy/OnColorTheory/releases">
+      Download from GitHub Releases
+    </a>
+    <p class="requirements">
+      macOS 14 Sonoma or later, Apple silicon. The build is signed locally
+      rather than notarized, so the first launch needs
+      <strong>Control-click, then Open</strong>. Source code is
+      <a href="https://github.com/drabhikroy/OnColorTheory">on GitHub</a>.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Where this came from</h2>
+    <p>
+      Much of this began as teaching material for the color portion of a data
+      visualization course I taught as an assistant professor at West Virginia
+      University. It accumulated over several semesters as explanations, worked
+      examples, and demonstrations that answered the questions students actually
+      asked.
+    </p>
+    <p>
+      Collecting it into one app was a way to keep it in a form I could still
+      use. If any of it is useful to you, for teaching, for design work, or out
+      of plain curiosity about how color numbers behave, please take it.
+    </p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>
+      Copyright 2026 Abhik Roy. Licensed under the
+      <a href="https://polyformproject.org/licenses/noncommercial/1.0.0">PolyForm
+      Noncommercial License 1.0.0</a>. Personal study, teaching, academic
+      research, and use by nonprofit and government organizations are all
+      permitted.
+    </p>
+    <p>
+      The name nods to <em>De Coloribus</em>, handed down in the Aristotelian
+      corpus and conventionally cited as pseudo-Aristotle, since scholars agree
+      it is not Aristotle's own.
+    </p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  // The same constants the app uses, so a number on this page and the same
+  // number in the app agree rather than merely resembling one another.
+  function toLinear(c) {
+    var m = Math.abs(c), s = c < 0 ? -1 : 1;
+    return m <= 0.04045 ? c / 12.92 : s * Math.pow((m + 0.055) / 1.055, 2.4);
+  }
+
+  function toXYZ65(r, g, b) {
+    var lr = toLinear(r), lg = toLinear(g), lb = toLinear(b);
+    return [
+      (506752 / 1228815) * lr + (87881 / 245763) * lg + (12673 / 70218) * lb,
+      (87098 / 409605) * lr + (175762 / 245763) * lg + (12673 / 175545) * lb,
+      (7918 / 409605) * lr + (87881 / 737289) * lg + (1001167 / 1053270) * lb
+    ];
+  }
+
+  function toD50(x, y, z) {
+    return [
+      1.0479297925449969 * x + 0.022946870601609652 * y - 0.05019226628920524 * z,
+      0.02962780877005599 * x + 0.9904344267538799 * y - 0.017073799063418826 * z,
+      -0.009243040646204504 * x + 0.015055191490298152 * y + 0.7518742814281371 * z
+    ];
+  }
+
+  function labF(t) {
+    var e = 216 / 24389, k = 24389 / 27;
+    return t > e ? Math.cbrt(t) : (k * t + 16) / 116;
+  }
+
+  function toLab(x, y, z) {
+    var wx = 0.3457 / 0.3585, wy = 1, wz = (1 - 0.3457 - 0.3585) / 0.3585;
+    var fx = labF(x / wx), fy = labF(y / wy), fz = labF(z / wz);
+    return [116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz)];
+  }
+
+  function toOkLab(x, y, z) {
+    var l = 0.8190224379967030 * x + 0.3619062600528904 * y - 0.1288737815209879 * z;
+    var m = 0.0329836539323885 * x + 0.9292868615863434 * y + 0.0361446663506424 * z;
+    var s = 0.0481771893596242 * x + 0.2642395317527308 * y + 0.6335478284694309 * z;
+    var lr = Math.cbrt(l), mr = Math.cbrt(m), sr = Math.cbrt(s);
+    return [
+      0.2104542683093140 * lr + 0.7936177747023054 * mr - 0.0040720430116193 * sr,
+      1.9779985324311684 * lr - 2.4285922420485799 * mr + 0.4505937096174110 * sr,
+      0.0259040424655478 * lr + 0.7827717124575296 * mr - 0.8086757549230774 * sr
+    ];
+  }
+
+  function luminance(r, g, b) {
+    return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+  }
+
+  var chip = document.getElementById("chip");
+  var picker = document.getElementById("picker");
+  var hexField = document.getElementById("hexField");
+  var out = {
+    rgb: document.getElementById("outRGB"),
+    lab: document.getElementById("outLab"),
+    ok: document.getElementById("outOk"),
+    y: document.getElementById("outY"),
+    contrast: document.getElementById("outContrast"),
+    verdict: document.getElementById("verdictLine")
+  };
+
+  function render(hex) {
+    var n = parseInt(hex.slice(1), 16);
+    var R = (n >> 16) & 255, G = (n >> 8) & 255, B = n & 255;
+    var r = R / 255, g = G / 255, b = B / 255;
+
+    var xyz65 = toXYZ65(r, g, b);
+    var lab = toLab.apply(null, toD50.apply(null, xyz65));
+    var ok = toOkLab.apply(null, xyz65);
+    var chroma = Math.hypot(ok[1], ok[2]);
+    var hue = (Math.atan2(ok[2], ok[1]) * 180 / Math.PI + 360) % 360;
+    var Y = luminance(r, g, b);
+    var ratio = (1 + 0.05) / (Y + 0.05);
+
+    chip.style.background = hex;
+    out.rgb.textContent = R + " " + G + " " + B;
+    out.lab.textContent = lab[0].toFixed(1) + " " + lab[1].toFixed(1) + " " + lab[2].toFixed(1);
+    out.ok.textContent = ok[0].toFixed(3) + " " + chroma.toFixed(3) + " " + hue.toFixed(0) + "\u00B0";
+    out.y.textContent = Y.toFixed(4);
+    out.contrast.textContent = ratio.toFixed(2) + ":1";
+
+    var label, tone;
+    if (ratio >= 7)        { label = "Passes AAA for normal text"; tone = "var(--positive)"; }
+    else if (ratio >= 4.5) { label = "Passes AA for normal text";  tone = "var(--positive)"; }
+    else if (ratio >= 3)   { label = "Large text and UI cues only"; tone = "var(--warning)"; }
+    else                   { label = "Below every text threshold"; tone = "var(--critical)"; }
+
+    out.verdict.innerHTML = "";
+    var badge = document.createElement("span");
+    badge.className = "verdict";
+    badge.style.color = tone;
+    badge.textContent = label;
+    out.verdict.appendChild(badge);
+    out.verdict.appendChild(
+      document.createTextNode(" when used as text on white.")
+    );
+  }
+
+  function normalize(value) {
+    var v = value.trim();
+    if (v.charAt(0) !== "#") { v = "#" + v; }
+    if (/^#[0-9a-fA-F]{3}$/.test(v)) {
+      v = "#" + v[1] + v[1] + v[2] + v[2] + v[3] + v[3];
+    }
+    return /^#[0-9a-fA-F]{6}$/.test(v) ? v.toUpperCase() : null;
+  }
+
+  picker.addEventListener("input", function () {
+    var hex = picker.value.toUpperCase();
+    hexField.value = hex;
+    render(hex);
+  });
+
+  hexField.addEventListener("input", function () {
+    var hex = normalize(hexField.value);
+    if (hex) {
+      picker.value = hex;
+      render(hex);
+    }
+  });
+
+  render("#C58F63");
+})();
+</script>
+
+</body>
+</html>

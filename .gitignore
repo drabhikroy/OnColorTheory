@@ -1,0 +1,15 @@
+# Anchored to the repository root with a leading slash. An unanchored pattern
+# such as "Build/" matches a directory of that name at any depth, which in this
+# project would silently exclude Sources/OnColorTheoryApp/Features/Build/ and
+# with it the entire Build workspace.
+/.build/
+/.swiftpm/
+/Build/
+/DerivedData/
+/dist/
+
+.DS_Store
+*.xcuserstate
+xcuserdata/
+__pycache__/
+*.pyc
