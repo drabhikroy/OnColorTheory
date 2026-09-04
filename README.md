@@ -16,67 +16,36 @@ palette suggestions, which are off by default.
 
 ## What it does
 
-- A native Home dashboard plus a visually indexed sidebar for Learn, Explore, Convert, Build, Check, and Reference. A shared multicolor icon system gives each workspace and major in-workspace destination a consistent shape, palette, and central symbol, with a prominent 82-point identity and one rounded header treatment across workspace and focused-destination pages. The app has its own color-coordinate icon in the bundle and on Home.
-- A versioned workspace session that restores the last valid working state for Learn, Explore, Convert, Build, Check, and Reference across navigation and app relaunches, migrates older sessions, and preserves a recovery copy when stored data is unreadable or from a newer schema.
-- A Home “Continue where you left off” card that names the saved task and returns to it without forcing an automatic redirect on launch.
-- Task-specific compositions instead of one repeated card grid: a numbered Learn path, visual Explore gallery, Convert workbench, five-stage Build studio, Check diagnostic dashboard, and searchable Reference field guide.
-- One restrained structural accent across navigation, headers, cards, and actions, with separate positive, caution, and critical status roles. Scientific swatches remain exact, while labels, symbols, borders, and position retain meaning.
-- A system-responsive accessibility layer for Increase Contrast, Differentiate Without Color, Reduce Motion, and Reduce Transparency, with stronger shared surfaces and a visible checkmark for selected stages when hue should not distinguish state.
-- Settings for following macOS appearance or choosing Light or Dark, plus six interface-cue palettes. Protan-, deutan-, tritan-aware, and monochrome choices never alter the scientific colors being analyzed and retain labels, symbols, and borders as the primary cues.
-- Large native control sizing throughout the app, with body-sized labels for the principal actions in Convert, Build, and Check.
-- Direct Command-1 through Command-7 navigation for Home, Learn, Explore, Convert, Build, Check, and Reference.
-- A dedicated Learn library with four compact numbered paths, one focused lesson preview, one consistently positioned primary action, clear scope and length, and a return route from every lesson.
-- A first Learn lesson with a directly selectable concept map, following the active color from encoded sRGB channels through linear light and reference-white assumptions one visualization at a time.
-- A second three-part visual lesson that keeps one color pair visible while contrasting two different questions: WCAG foreground/background contrast and CIEDE2000 color difference.
-- A third three-part perception lesson with two numerically identical center patches, fixed and adjustable surrounding fields, and a visual boundary between deterministic coordinates, viewing context, and individual appearance.
-- A fourth three-part reproduction lesson that follows one Display P3 color through source interpretation, conversion into sRGB coordinates, destination-boundary detection, and the separate choice of a mapping method.
-- Four deterministic lesson examples, stable Previous/progress/Next positions, contextual definitions, direct sources, and exact handoff into the corresponding Check analysis.
-- A focused Explore gallery with compact, shape-redundant icons for two bounded Predict, Observe, Explain experiments and one-column adaptation at enlarged text sizes. The selected experiment repeats its icon at a larger scale beside the experiment heading.
-- A mixing experiment that compares encoded-sRGB interpolation with linear-light interpolation while holding the opaque endpoints fixed.
-- Editable color endpoints, example pairs, a movable mix position, two directly rendered gradient calculations, numeric result cards, and one-click handoff to Convert.
-- Deterministic premultiplied-alpha interpolation in both encoded and linear-light sRGB, even though the first lab intentionally holds alpha opaque to isolate one variable.
-- A transparency experiment that holds one partly transparent source fixed over two named opaque backdrops, then presents both exact visible results, source/backdrop contribution bars, contextual definitions, native LaTeX, and direct specifications.
-- One shared deterministic source-over compositor for both the transparency experiment and WCAG contrast analysis, with translucent backdrops rejected until another underlying layer is known.
-- A role-based Palette Studio for canvas, body text, accent, and accent text, with six light and dark starter palettes.
-- A dedicated five-step optional Ollama assistant with official installation guidance, local-app detection, local or external connection checks, system-aware model starting points, installed-model selection, live download progress and cancellation, enlarged-text reflow, keyboard shortcuts, and a direct handoff to Build → Recommend.
-- A Build recommendation stage where people can review exactly what will be sent, cancel generation, and see usable connection guidance; the selected model proposes four role colors, an overall approach, and a natural-language explanation for every choice. The shared text-on-palette preview supports custom heading, paragraph, cue, detail, and button copy, followed by the app's independent deterministic relationship checks before a suggestion can be applied.
-- A persistent interface preview that keeps custom heading, paragraph, cue, detail, and button text available through all five Build stages. It can show the Studio, Light, Dark, or model-suggested palette without treating visual judgment as a scientific verdict.
-- Separate deterministic checks for ordinary body text, ordinary text on an accent, and an accent used as a required UI or graphical cue; each result names its WCAG threshold and can open the exact pair in Check.
-- One-click selection of whichever of black or white gives higher contrast on the accent, without claiming that this alone establishes readability.
-- A persistent studio rail for Design, Light & Dark, Recommend, Check, and Export that keeps one Palette Studio task visible without losing the active palette.
-- A focused Light & Dark stage with separate saved role palettes, editable light and dark starters, side-by-side previews, independent checks for both appearances, adaptive `prefers-color-scheme` CSS, and carefully scoped links to Leonardo, Adobe Color, and W3C contrast guidance.
-- Copyable palette export for CSS, Swift, JavaScript, Python, R, and JSON, plus one-action saving of all roles to the persistent Color Tray.
-- A separately toggleable, independently resizable Color Inspector with a system screen sampler that can pick a pixel inside or outside the app, preserve it as the working color, and report Values, Measures, and Context through one aligned label/help/value grid without reparsing an already-normalized pixel.
-- Independently resizable, single-instance Color Tray, definition, Settings, Inspector, Model Assist setup, Help, and primary windows that remember their last useful position and size and recover on-screen if the display arrangement changes. Repeated actions bring the existing window forward rather than creating another copy.
-- Visible Display access in the main toolbar and Inspector, leading to Follow Mac, Light, Dark, reading, and color-vision-aware interface-cue options.
-- CSS hexadecimal parsing for 3-, 4-, 6-, and 8-digit notation.
-- Modern and legacy CSS `rgb()`/`rgba()` input with number or percentage components and alpha.
-- Encoded sRGB, linear sRGB, Display P3, CIE XYZ D65/D50, CIELAB/LCh D50, Oklab/OkLCh D65, HSL, alpha, and relative-luminance output.
-- Copy controls for every serialized representation.
-- A representation-specific conversion map: short notational outputs stop early, D65 targets avoid an irrelevant D50 step, and D50 Lab paths expose chromatic adaptation.
-- Stable Previous, progress, and Next or Start Over controls below every variable-height conversion stage.
-- A vertical conversion map beside one selected stage with separate Meaning, Calculation, and Sources views; native LaTeX equations retain selectable readings, substituted values, spoken equivalents, and Copy LaTeX controls.
-- Optional code export beneath the current Convert result for CSS, Swift, JavaScript, Python, R, and JSON; non-CSS snippets explicitly use sRGB components.
-- Contextual term definitions with brief native hover help and keyboard-accessible explanatory windows; reading text throughout the app is selectable.
-- One reusable, validating HEX/RGB color editor across Explore, Build, and Check, with visible swatches, native pickers, direct text editing, and non-color error feedback.
-- A two-color WCAG 2.2 contrast workbench with an actual-color preview, alpha compositing, exact threshold decisions, and separate AA, AAA, text, and non-text results.
-- A persistent diagnostic rail for contrast, color difference, color-space limits, and meaning conveyed through color, followed by separate Work and Results or Method and Sources views.
-- A deterministic CIEDE2000 comparison with a side-by-side visual, signed lightness/chroma/hue term bars, contextual definitions, visible LaTeX, direct CIE sources, and no unsupported universal pass/fail threshold.
-- CIEDE2000 verification against all 34 supplemental reference pairs published by Sharma, Wu, and Dalal.
-- A color-reliance review that compares the original pair with equal-channel neutral colors preserving calculated relative luminance, then prompts review of text, shape, pattern, position, and interaction states without claiming automated WCAG conformance or color-vision simulation.
-- A Display P3-to-sRGB gamut check with validating CSS input, directly adjustable channels, an explicit in-range result, original and clipped previews, visualized converted-channel boundaries, native LaTeX, and no claim that simple clipping is the preferred gamut-mapping method.
-- A Reference landing library that groups all twenty-four terms into four descriptive topic cards, with a single inline search across names, definitions, categories, and key distinctions.
-- Topic-level term cards that reveal one short definition at a time, adapt to one column at enlarged text sizes, and keep a clear return path to the topic library.
-- A focused single-term reader with stable Previous and Next positions, five contextual native-LaTeX equations, selectable in-words readings, Copy LaTeX controls, and versioned sources and limitations visible without another disclosure click.
-- Focused presentation: paired color input and output at ordinary text sizes, one expanded conversion stage, one plain-language contrast verdict and threshold scale, and one reference term at a time.
-- Persistent Color Tray records containing the original representation, color space, alpha, profile context, conversion history, source, label, and lock state.
-- Recoverable Color Tray storage errors that keep the current in-memory colors available, state that persistence failed, and never imply that an unsuccessful write was saved.
-- Isolated ephemeral workspace sessions for test-created models with custom Color Trays, while normal app launches retain live local persistence.
-- A dedicated seven-slide first-run walkthrough with visible progress, accessible Previous and Next controls, a clear skip route, concise explanations, and a final start action. It appears once, remains available from Start here in Help, and reopens only after a complete first-run reset or a direct request.
-- A searchable, task-oriented Help window with exact routes to the relevant workspace or tool, Light & Dark guidance, editable-preview guidance, optional Model Assist status and Ollama boundaries, result-authority explanations, keyboard routes, and recovery troubleshooting. Help adapts to a compact topic menu at enlarged text sizes and shows the installed app version.
-- Keyboard commands for navigation, adding a color, toggling the tray or inspector, resuming saved work, opening Model Assist, and opening Help; the setup assistant also supports Return, Command-Return, Command-[, Escape, and Command-R where relevant.
-- Atkinson Hyperlegible Next at a larger default reading size, with adjustable scaling and a system-font override; equations use SwiftMath's native LaTeX renderer with a shared image-backed AppKit surface that preserves left-to-right glyph order.
-- A provider-neutral model contract and concrete Ollama provider in which models can propose palettes but cannot author scientific measurements.
+On Color Theory is organized around one deterministic color core, exposed
+through a Home dashboard, six workspaces, a persistent Color Tray, and a
+Color Inspector. A saved session restores your last task across launches,
+with a "Continue where you left off" card on Home.
+
+- **Learn** — four numbered lessons, each built around one worked example:
+  sRGB to linear light, WCAG contrast versus CIEDE2000 difference, how
+  surrounding context shifts appearance, and mapping a Display P3 color
+  into the sRGB gamut
+- **Explore** — two hands-on experiments: mixing colors in encoded sRGB
+  versus linear-light space, and source-over compositing for transparency
+- **Convert** — moves a color between encoded sRGB, linear sRGB, Display
+  P3, CIE XYZ (D65/D50), CIELAB/LCh, Oklab/OkLCh, and HSL, showing the
+  calculation at each step, with code export to CSS, Swift, JavaScript,
+  Python, R, and JSON
+- **Build** — a role-based palette studio (canvas, text, accent, accent
+  text) with light and dark starters, deterministic WCAG contrast checks,
+  and an optional model-assisted suggestion (see
+  [Local model](#local-model))
+- **Check** — a diagnostic workbench for WCAG contrast, CIEDE2000 color
+  difference (verified against the 34 Sharma, Wu, and Dalal reference
+  pairs), a color-reliance review, and a Display P3-to-sRGB gamut check
+- **Reference** — a searchable glossary of 24 color-science terms, each
+  with its equation, a plain-language reading, and sources
+- **Color Tray and Inspector** — a persistent, exportable record of every
+  color you've worked with, plus a system screen sampler for picking a
+  color from anywhere on screen
+
+Interface cue palettes and other accessibility behavior are covered under
+[Accessibility](#accessibility).
 
 ## What it does not do
 
