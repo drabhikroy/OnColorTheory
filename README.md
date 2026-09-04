@@ -1,52 +1,20 @@
 # On Color Theory
 
-[![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue)](LICENSE)
-![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-arm64-black?logo=apple&logoColor=white)
+[![License](https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue)](LICENSE.md)
 [![Platform](https://img.shields.io/badge/platform-macOS%2014%2B-lightgrey)](#requirements)
-[![Release](https://img.shields.io/github/v/release/drabhikroy/oncolortheory)](https://github.com/drabhikroy/oncolortheory/releases/latest)
+![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-arm64-black?logo=apple&logoColor=white)
+[![Release](https://img.shields.io/github/v/release/drabhikroy/OnColorTheory)](https://github.com/drabhikroy/OnColorTheory/releases/latest)
 
-On Color Theory is a native macOS learning and analysis app built with Swift and SwiftUI. Version 1.0.0 establishes the app shell, deterministic color core, Learn, Explore, Convert, Build, Check, and Reference workspaces, persistent Color Tray, Color Inspector, evidence metadata, and optional model-assisted palette recommendations.
+On Color Theory is a workbench for exploring how color values behave and checking the ones you plan to use.
+
+It is a native macOS application built with Swift and SwiftUI. Version 1.0.0 establishes the app shell, deterministic color core, Learn, Explore, Convert, Build, Check, and Reference workspaces, persistent Color Tray, Color Inspector, evidence metadata, and optional model-assisted palette recommendations.
+
+No account and no telemetry. Nothing is sent anywhere unless you turn on
+palette suggestions, which are off by default.
 
 ![The Home screen, showing the two workspace groups and the working color](Documentation/screenshots/home.png)
 
-## Run the project
-
-Open `Package.swift` in Xcode 26 or newer, select the `OnColorTheoryApp` scheme, and run it on macOS 14 or newer.
-
-From Terminal:
-
-```sh
-swift run OnColorTheoryApp
-```
-
-Run the automated checks:
-
-```sh
-swift test
-```
-
-Create an ad-hoc signed app bundle:
-
-```sh
-Scripts/build-app.sh release
-```
-
-The bundle is written to `Build/On Color Theory.app`. It is intended for local development; public distribution will still require the normal Apple Developer signing and notarization flow.
-
-The app icon is generated from geometry rather than stored as artwork. `Scripts/build-icon.py` holds the three base colors and the plate dimensions, and writes the asset catalog, the brand PNG and SVG, and an icns from one source. Editing the six palette constants at the top of that script and running it again rebuilds every size.
-
-Numbered archives use `On Color Theory-###-vMAJOR.MINOR.PATCH.zip`. The zero-padded build number is also stored in the app bundle, so Finder ordering and the app's internal identity stay aligned.
-
-## Optional Model Assist recommendations
-
-Ollama is not bundled and model recommendations are off by default. Choose the independently grouped **Model Assist** control in the main toolbar, or press Command-Option-O. The dedicated assistant explains the optional boundary, connection, installation, system-sized model choices, live download progress and cancellation, and exactly where to apply a suggestion:
-
-- **Set up in On Color Theory** connects to Ollama on this Mac at `127.0.0.1:11434`; the assistant links to the official macOS installer, detects Ollama in Applications, recommends a conservative Qwen 3 starting size from the Mac's architecture and memory, and can discover, download, select, and delete models after Ollama is running. The assistant can also move the local Ollama app to the Trash after confirmation.
-- **Use an external server** connects to an address supplied by the user and lists the models installed there. Remote hosts require HTTPS. HTTP remains available for localhost and private local-network addresses. The interface warns that the design brief and current palette are sent to that server.
-
-Before generation, the Recommend stage can show the exact four-role design brief, current palette, destination, and excluded information. Local generation is labeled separately from sending a request to an external server. Requests are length-bounded, treat the design brief as untrusted data, and use Ollama's structured-output API. Returned values must be opaque `#RRGGBB` colors with bounded prose. The persistent interface preview supports an editable heading, body, cue heading, cue detail, and button label using the Studio, Light, Dark, or model-suggested palette. Custom preview copy remains available throughout all five Build stages. The model's text and colors remain a proposal; the deterministic app core independently calculates all displayed relationship results.
-
-## What is implemented
+## What it does
 
 - A native Home dashboard plus a visually indexed sidebar for Learn, Explore, Convert, Build, Check, and Reference. A shared multicolor icon system gives each workspace and major in-workspace destination a consistent shape, palette, and central symbol, with a prominent 82-point identity and one rounded header treatment across workspace and focused-destination pages. The app has its own color-coordinate icon in the bundle and on Home.
 - A versioned workspace session that restores the last valid working state for Learn, Explore, Convert, Build, Check, and Reference across navigation and app relaunches, migrates older sessions, and preserves a recovery copy when stored data is unreadable or from a newer schema.
@@ -110,17 +78,7 @@ Before generation, the Recommend stage can show the exact four-role design brief
 - Atkinson Hyperlegible Next at a larger default reading size, with adjustable scaling and a system-font override; equations use SwiftMath's native LaTeX renderer with a shared image-backed AppKit surface that preserves left-to-right glyph order.
 - A provider-neutral model contract and concrete Ollama provider in which models can propose palettes but cannot author scientific measurements.
 
-## Architectural rule
-
-The implementation keeps three responsibilities separate:
-
-1. Deterministic science and mathematics calculate.
-2. A versioned evidence registry explains and cites.
-3. Optional machine-learning providers propose.
-
-`PaletteProposal` deliberately has no contrast, gamut, color-difference, or color-vision fields. It carries only the provider identity, the proposed colors, and the model's own summary. Those findings are produced separately by `InterfacePaletteEvaluator`, which returns `PaletteRelationshipResult` values calculated by the app rather than supplied by a model.
-
-## Current scientific scope
+## What it does not do
 
 The conversion path begins with sRGB's D65 white, then exposes a Bradford D65-to-D50 chromatic-adaptation step before reporting CSS CIELAB and CIE LCh. Oklab and OkLCh remain D65-relative. Both white points are visible wherever their coordinates appear.
 
@@ -140,7 +98,67 @@ The gamut check accepts an opaque Display P3 color whose source components stay 
 
 The transparency experiment uses simple source-over compositing of encoded sRGB components over opaque backdrops. It deliberately does not stand in for a complete browser or display pipeline and does not cover blend modes, group opacity, high-dynamic-range rendering, or translucent backdrops.
 
-## Project notes
+## Planned
+
+A **Brief History of Color** section and a **Color Theory** section will be added
+in a later release. Neither ships in 1.0.0.
+
+## Requirements
+
+macOS 14 or newer, on Apple silicon.
+
+Building from source additionally requires Xcode 26 or newer.
+
+## Install
+
+Open `Package.swift` in Xcode 26 or newer, select the `OnColorTheoryApp` scheme, and run it on macOS 14 or newer.
+
+From Terminal:
+
+```bash
+swift run OnColorTheoryApp
+```
+
+## Local model
+
+Ollama is not bundled and model recommendations are off by default. Choose the independently grouped **Model Assist** control in the main toolbar, or press Command-Option-O. The dedicated assistant explains the optional boundary, connection, installation, system-sized model choices, live download progress and cancellation, and exactly where to apply a suggestion:
+
+- **Set up in On Color Theory** connects to Ollama on this Mac at `127.0.0.1:11434`; the assistant links to the official macOS installer, detects Ollama in Applications, recommends a conservative Qwen 3 starting size from the Mac's architecture and memory, and can discover, download, select, and delete models after Ollama is running. The assistant can also move the local Ollama app to the Trash after confirmation.
+- **Use an external server** connects to an address supplied by the user and lists the models installed there. Remote hosts require HTTPS. HTTP remains available for localhost and private local-network addresses. The interface warns that the design brief and current palette are sent to that server.
+
+Before generation, the Recommend stage can show the exact four-role design brief, current palette, destination, and excluded information. Local generation is labeled separately from sending a request to an external server. Requests are length-bounded, treat the design brief as untrusted data, and use Ollama's structured-output API. Returned values must be opaque `#RRGGBB` colors with bounded prose. The persistent interface preview supports an editable heading, body, cue heading, cue detail, and button label using the Studio, Light, Dark, or model-suggested palette. Custom preview copy remains available throughout all five Build stages. The model's text and colors remain a proposal; the deterministic app core independently calculates all displayed relationship results.
+
+## Accessibility
+
+- Six interface cue palettes: system accent, blue and orange, protan aware,
+  deutan aware, tritan aware, and monochrome. None of them alters the
+  scientific colors under analysis
+- Every role carries a label, a symbol, or a position as well as a color, so
+  meaning never rests on hue alone
+- Responds to the system Differentiate Without Color, Reduce Transparency, and
+  Reduce Motion settings
+- Complete VoiceOver heading levels, at nine level one, thirty level two, and
+  four level three
+- Set in Atkinson Hyperlegible Next
+
+Note that this application does not simulate color vision deficiency, and its
+color reliance check is a luminance preserving preview rather than a
+simulation. That limit is stated in What it does not do and is not softened
+here.
+
+## How it works
+
+The implementation keeps three responsibilities separate:
+
+1. Deterministic science and mathematics calculate.
+2. A versioned evidence registry explains and cites.
+3. Optional machine-learning providers propose.
+
+`PaletteProposal` deliberately has no contrast, gamut, color-difference, or color-vision fields. It carries only the provider identity, the proposed colors, and the model's own summary. Those findings are produced separately by `InterfacePaletteEvaluator`, which returns `PaletteRelationshipResult` values calculated by the app rather than supplied by a model.
+
+## For developers
+
+### Documentation
 
 - [Typography research](Documentation/TYPOGRAPHY_RESEARCH.md)
 - [Evidence-based design decisions](Documentation/DESIGN_DECISIONS.md)
@@ -151,12 +169,33 @@ The transparency experiment uses simple source-over compositing of encoded sRGB 
 - [Security review](Documentation/SECURITY_REVIEW_100.md)
 - [Third-party notices](THIRD_PARTY_NOTICES.md)
 
-## Planned
+### Tests and standards gates
 
-A **Brief History of Color** section and a **Color Theory** section will be added
-in a later release. Neither ships in 1.0.0.
+Run the automated checks:
 
-## About the name
+```bash
+swift test
+```
+
+### Building distributable packages
+
+Create an ad-hoc signed app bundle:
+
+```bash
+Scripts/build-app.sh release
+```
+
+The bundle is written to `Build/On Color Theory.app`. It is intended for local development; public distribution will still require the normal Apple Developer signing and notarization flow.
+
+The app icon is generated from geometry rather than stored as artwork. `Scripts/build-icon.py` holds the three base colors and the plate dimensions, and writes the asset catalog, the brand PNG and SVG, and an icns from one source. Editing the six palette constants at the top of that script and running it again rebuilds every size.
+
+## Releases
+
+Numbered archives use `On Color Theory-###-vMAJOR.MINOR.PATCH.zip`. The zero-padded build number is also stored in the app bundle, so Finder ordering and the app's internal identity stay aligned.
+
+## Credits and background
+
+### About the name
 
 *De Coloribus*, rendered in English as *On Colors*, comes down to us in the
 Aristotelian corpus, and the name here nods to it alongside the ordinary sense
@@ -165,7 +204,7 @@ Attributions to Theophrastus and to Strato of Lampsacus have both been proposed
 and both refuted, so it is conventionally cited as pseudo-Aristotle. The nod is
 to the tradition, not a claim about who held the pen.
 
-## Where this came from
+### Where this came from
 
 Much of the material here began as teaching material. I built it for the color
 portion of a data visualization course I taught as an assistant professor at
@@ -180,8 +219,12 @@ plain curiosity about how color numbers behave, please take it and use it.
 
 ## License
 
-Copyright 2026 Abhik Roy.
+[PolyForm Noncommercial License 1.0.0](LICENSE.md). The full text is also at
+<https://polyformproject.org/licenses/noncommercial/1.0.0>.
 
-Licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE.md). Personal
-study, hobby projects, teaching, academic research, and use by nonprofit and
-government organizations are all permitted. Commercial use is not.
+Personal use, personal study, hobby projects, teaching, academic research, and
+use by charitable, educational, nonprofit, public research, public health, and
+government organizations are permitted. Commercial use is not permitted without
+a separate license.
+
+Required notice: Copyright 2026 Abhik Roy.
