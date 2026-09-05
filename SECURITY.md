@@ -48,7 +48,9 @@ first launch.
 
 Open a private security advisory through the repository, or open a
 normal issue if the problem is not sensitive. Please include the
-version, what you did, and what you saw.
+version, what you did, and what you saw. There is no account and no
+telemetry, so a report here is about the code rather than about an
+incident.
 
 ## Scope
 
