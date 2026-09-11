@@ -50,6 +50,14 @@ done
 chmod -R u+w "$staged_app"
 xattr -cr "$staged_app"
 
+# Prefer a real Developer ID Application identity over ad-hoc signing. grep
+# returns exit code 1 when nothing matches, which would stop the script
+# under set -e, so the || true keeps that from happening.
+developer_id="$(security find-identity -v -p codesigning 2>/dev/null \
+    | grep 'Developer ID Application' \
+    | head -1 \
+    | awk -F'"' '{print $2}' || true)"
+
 # Sign fully here, in /private/tmp, before anything moves into Build/. Build/
 # sits inside this project's working copy, which lives under ~/Documents; if
 # iCloud Drive's "Desktop & Documents Folders" sync is on for this Mac, its
@@ -57,8 +65,20 @@ xattr -cr "$staged_app"
 # moment it appears there, and codesign refuses to sign anything carrying
 # that kind of metadata. Nothing here in /private/tmp is synced, so the
 # signature never has to race it.
-codesign --force --deep --sign - --timestamp=none "$staged_app"
-codesign --verify --deep --strict "$staged_app"
+#
+# No --deep: the bundle has no nested executable code (no helper apps, no
+# embedded frameworks), so one top-level signature is correct and complete.
+# --deep would apply the same entitlements to every nested item and hide
+# individual failures, neither of which this bundle has any use for.
+if [[ -n "$developer_id" ]]; then
+    print "Signing identity: $developer_id"
+    codesign --force --options runtime --timestamp --sign "$developer_id" "$staged_app"
+else
+    print "No Developer ID Application certificate found; signing ad-hoc."
+    print "This build is for local testing only. Do not distribute it."
+    codesign --force --sign - --timestamp=none "$staged_app"
+fi
+codesign --verify --strict "$staged_app"
 
 ditto --norsrc --noextattr "$staged_app" "$app_bundle"
 
@@ -68,7 +88,7 @@ ditto --norsrc --noextattr "$staged_app" "$app_bundle"
 # gives any late-arriving metadata time to settle before we give up.
 verify_final_bundle() {
     for attempt in 1 2 3 4 5; do
-        if codesign --verify --deep --strict "$app_bundle" 2>/dev/null; then
+        if codesign --verify --strict "$app_bundle" 2>/dev/null; then
             return 0
         fi
         sleep 2
@@ -81,6 +101,6 @@ verify_final_bundle() {
 if ! verify_final_bundle; then
     # Every retry failed silently; run it once more without swallowing
     # stderr so the actual codesign error reaches the terminal.
-    codesign --verify --deep --strict "$app_bundle"
+    codesign --verify --strict "$app_bundle"
 fi
 print "$app_bundle"

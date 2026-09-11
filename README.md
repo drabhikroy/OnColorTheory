@@ -21,27 +21,27 @@ through a Home dashboard, six workspaces, a persistent Color Tray, and a
 Color Inspector. A saved session restores your last task across launches,
 with a "Continue where you left off" card on Home.
 
-- **Learn** — four numbered lessons, each built around one worked example:
+- **Learn**: four numbered lessons, each built around one worked example:
   sRGB to linear light, WCAG contrast versus CIEDE2000 difference, how
   surrounding context shifts appearance, and mapping a Display P3 color
   into the sRGB gamut
-- **Explore** — two hands-on experiments: mixing colors in encoded sRGB
+- **Explore**: two hands-on experiments: mixing colors in encoded sRGB
   versus linear-light space, and source-over compositing for transparency
-- **Convert** — moves a color between encoded sRGB, linear sRGB, Display
+- **Convert**: moves a color between encoded sRGB, linear sRGB, Display
   P3, CIE XYZ (D65/D50), CIELAB/LCh, Oklab/OkLCh, and HSL, showing the
   calculation at each step, with code export to CSS, Swift, JavaScript,
   Python, R, and JSON
-- **Build** — a role-based palette studio (canvas, text, accent, accent
+- **Build**: a role-based palette studio (canvas, text, accent, accent
   text) with light and dark starters, deterministic WCAG contrast checks,
   and an optional model-assisted suggestion (see
   [Local model](#local-model))
-- **Check** — a diagnostic workbench for WCAG contrast, CIEDE2000 color
+- **Check**: a diagnostic workbench for WCAG contrast, CIEDE2000 color
   difference (verified against the 34 Sharma, Wu, and Dalal reference
   pairs), a color-reliance review, and a Display P3-to-sRGB gamut check
-- **Reference** — a searchable glossary of 24 color-science terms, each
+- **Reference**: a searchable glossary of 24 color-science terms, each
   with its equation, a plain-language reading, and sources
-- **Color Tray and Inspector** — a persistent, exportable record of every
-  color you've worked with, plus a system screen sampler for picking a
+- **Color Tray and Inspector**: a persistent, exportable record of every
+  color you have worked with, plus a system screen sampler for picking a
   color from anywhere on screen
 
 Interface cue palettes and other accessibility behavior are covered under
@@ -148,13 +148,13 @@ swift test
 
 ### Building distributable packages
 
-Create an ad-hoc signed app bundle:
-
 ```bash
 Scripts/build-app.sh release
 ```
 
-The bundle is written to `Build/On Color Theory.app`. It is intended for local development; public distribution will still require the normal Apple Developer signing and notarization flow.
+The bundle is written to `Build/On Color Theory.app`, signed with a Developer ID Application certificate when one is available in Keychain Access, or ad-hoc for local development when it is not.
+
+For a public release, `Scripts/package-release.sh --notarize` signs, notarizes, and staples the distributed DMG.
 
 The app icon is generated from geometry rather than stored as artwork. `Scripts/build-icon.py` holds the three base colors and the plate dimensions, and writes the asset catalog, the brand PNG and SVG, and an icns from one source. Editing the six palette constants at the top of that script and running it again rebuilds every size.
 

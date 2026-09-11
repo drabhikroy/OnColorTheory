@@ -7,7 +7,12 @@
 # exist anywhere else, which is why the DMG cannot be produced as part of the
 # review package.
 #
-#   Scripts/package-release.sh
+#   Scripts/package-release.sh [--notarize]
+#
+# --notarize submits the DMG to Apple's notary service and staples the
+# ticket. It requires a Developer ID Application certificate in Keychain
+# Access and a stored notarytool keychain profile named "oncolortheory"
+# (set NOTARY_PROFILE to use a different name).
 #
 # Artifacts land in dist/.
 
@@ -15,6 +20,17 @@ set -euo pipefail
 
 project_directory="${0:A:h:h}"
 cd "$project_directory"
+
+do_notarize=0
+for arg in "${@:-}"; do
+    case "$arg" in
+        "")           ;;
+        --notarize)   do_notarize=1 ;;
+        *) print -u2 "Usage: Scripts/package-release.sh [--notarize]"; exit 2 ;;
+    esac
+done
+
+notary_profile="${NOTARY_PROFILE:-oncolortheory}"
 
 version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Support/Info.plist)"
 build="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' Support/Info.plist)"
@@ -44,6 +60,18 @@ print "\n== App bundle =="
 app_bundle="$(Scripts/build-app.sh release | tail -n 1)"
 print "Built $app_bundle"
 
+# grep returns exit code 1 when nothing matches, which would stop the script
+# under set -e, so the || true keeps that from happening.
+developer_id="$(security find-identity -v -p codesigning 2>/dev/null \
+    | grep 'Developer ID Application' \
+    | head -1 \
+    | awk -F'"' '{print $2}' || true)"
+
+if [[ "$do_notarize" -eq 1 && -z "$developer_id" ]]; then
+    print -u2 "ERROR: --notarize requires a Developer ID Application identity."
+    exit 1
+fi
+
 # 4. DMG. A plain read-only image with the app and a link to Applications,
 #    which is what someone expects to see after opening a download.
 print "\n== Disk image =="
@@ -61,8 +89,21 @@ hdiutil create \
     -imagekey zlib-level=9 \
     -ov \
     "$dmg"
-codesign --force --sign - --timestamp=none "$dmg"
+
+if [[ -n "$developer_id" ]]; then
+    codesign --force --sign "$developer_id" --timestamp "$dmg"
+else
+    codesign --force --sign - --timestamp=none "$dmg"
+fi
 print "Wrote $dmg"
+
+if [[ "$do_notarize" -eq 1 ]]; then
+    print "\n== Notarization =="
+    print "Submitting to Apple's notary service (profile: $notary_profile)..."
+    xcrun notarytool submit "$dmg" --keychain-profile "$notary_profile" --wait
+    xcrun stapler staple "$dmg"
+    print "Notarized and stapled"
+fi
 
 # 5. Source archive, from the git index so that ignored and untracked build
 #    output cannot leak into a published tarball.
@@ -78,3 +119,7 @@ shasum -a 256 *.dmg *.zip > SHA256SUMS.txt
 cat SHA256SUMS.txt
 
 print "\nDone. Artifacts are in dist/"
+if [[ "$do_notarize" -eq 0 && -n "$developer_id" ]]; then
+    print "\nSigned with a Developer ID certificate but not notarized."
+    print "Run again with --notarize to notarize and staple before distributing."
+fi
