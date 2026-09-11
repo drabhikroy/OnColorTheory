@@ -37,12 +37,13 @@ tokens, and no telemetry.
 
 ## Recommendations not yet applied
 
-Three changes would tighten this further but touch signing or
-sandboxing behavior, so they need a launch test on the target machine
-rather than being made blind: enabling the hardened runtime, adopting
-the App Sandbox, and notarizing the build before wide distribution.
-Until then, an ad hoc signed build requires Control-click then Open on
-first launch.
+Adopting the App Sandbox would tighten this further but touches
+signing behavior, so it needs a launch test on the target machine
+rather than being made blind.
+
+The build is signed with a Developer ID Application certificate, uses
+the hardened runtime, and is notarized by Apple, so no Gatekeeper
+workaround is needed on first launch.
 
 ## Reporting a problem
 
