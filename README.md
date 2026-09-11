@@ -80,6 +80,16 @@ Building from source additionally requires Xcode 26 or newer.
 
 ## Install
 
+Download the latest `OnColorTheory-*.dmg` from the Releases page.
+
+Open the DMG file and drag On Color Theory to your Applications folder, then
+open it like any other application.
+
+The application is signed with a Developer ID certificate and notarized by
+Apple, so it opens with a plain double click and no security warning.
+
+### Running from source
+
 Open `Package.swift` in Xcode 26 or newer, select the `OnColorTheoryApp` scheme, and run it on macOS 14 or newer.
 
 From Terminal:
